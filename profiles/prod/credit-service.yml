@@ -1,0 +1,15 @@
+server:
+  port: 8083
+
+spring:
+  data:
+    mongodb:
+      # Para docker:
+      # uri: mongodb://host.docker.internal:27017/db_credit
+      # Local
+      uri: mongodb://localhost:27017/db_credit
+
+logging:
+  level:
+    root: INFO
+    com.bank.customer: DEBUG
