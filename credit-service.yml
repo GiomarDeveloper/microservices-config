@@ -13,3 +13,11 @@ logging:
   level:
     root: INFO
     com.bank.credit: DEBUG
+    
+ springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    disable-swagger-default-url: true
+    url: /openapi/credit-api.yaml
