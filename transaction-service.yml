@@ -8,8 +8,22 @@ spring:
       # uri: mongodb://host.docker.internal:27017/db_transaction
       # Local
       uri: mongodb://localhost:27017/db_transaction
+  application:
+    name: transaction-service
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    url: /v3/api-docs
+    disable-swagger-default-url: true
+    tags-sorter: alpha
+    operations-sorter: method
 
 logging:
   level:
     root: INFO
-    com.bank.credit: DEBUG
+    com.bank.transaction: DEBUG
+    org.springdoc: DEBUG
