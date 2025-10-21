@@ -4,8 +4,6 @@ server:
 spring:
   application:
     name: discovery-service
-  profiles:
-    active: default
 
 eureka:
   client:
