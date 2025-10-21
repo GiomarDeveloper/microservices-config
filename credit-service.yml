@@ -8,6 +8,11 @@ spring:
       # uri: mongodb://host.docker.internal:27017/db_credit
       # Local
       uri: mongodb://localhost:27017/db_credit
+      
+external:
+  services:
+    customer:
+      url: http://localhost:8081
 
 logging:
   level:

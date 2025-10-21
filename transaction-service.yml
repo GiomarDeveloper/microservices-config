@@ -9,6 +9,13 @@ spring:
       # Local
       uri: mongodb://localhost:27017/db_transaction
 
+external:
+  services:
+    account:
+      url: http://localhost:8082
+    credit:
+      url: http://localhost:8083
+
 logging:
   level:
     root: INFO

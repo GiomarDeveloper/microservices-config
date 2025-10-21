@@ -3,6 +3,11 @@ spring:
     mongodb:
       uri: mongodb://mongodb:27017/db_account
 
+external:
+  services:
+    customer:
+      url: http://host.docker.internal:8081
+
 logging:
   level:
     com.bank.account: DEBUG

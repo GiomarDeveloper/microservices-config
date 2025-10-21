@@ -9,6 +9,11 @@ spring:
       # Local
       uri: mongodb://localhost:27017/db_account
 
+external:
+  services:
+    customer:
+      url: http://localhost:8081
+
 logging:
   level:
     root: INFO
