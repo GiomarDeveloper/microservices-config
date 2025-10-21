@@ -1,0 +1,100 @@
+server:
+  port: 8079
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        # Customer Service Route
+        - id: customer-service
+          uri: lb://CUSTOMER-SERVICE
+          predicates:
+            - Path=/api/customers/**
+          filters:
+            - RewritePath=/api/customers/(?<segment>.*), /$\{segment}
+            - name: CircuitBreaker
+              args:
+                name: customerService
+                fallbackUri: forward:/fallback/customer
+
+        # Account Service Route  
+        - id: account-service
+          uri: lb://ACCOUNT-SERVICE
+          predicates:
+            - Path=/api/accounts/**
+          filters:
+            - RewritePath=/api/accounts/(?<segment>.*), /$\{segment}
+            - name: CircuitBreaker
+              args:
+                name: accountService
+                fallbackUri: forward:/fallback/account
+
+        # Credit Service Route
+        - id: credit-service
+          uri: lb://CREDIT-SERVICE
+          predicates:
+            - Path=/api/credits/**
+          filters:
+            - RewritePath=/api/credits/(?<segment>.*), /$\{segment}
+            - name: CircuitBreaker
+              args:
+                name: creditService
+                fallbackUri: forward:/fallback/credit
+
+        # Transaction Service Route
+        - id: transaction-service
+          uri: lb://TRANSACTION-SERVICE
+          predicates:
+            - Path=/api/transactions/**
+          filters:
+            - RewritePath=/api/transactions/(?<segment>.*), /$\{segment}
+            - name: CircuitBreaker
+              args:
+                name: transactionService
+                fallbackUri: forward:/fallback/transaction
+
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+
+  # Circuit Breaker Configuration
+  resilience4j:
+    circuitbreaker:
+      configs:
+        default:
+          slidingWindowSize: 10
+          failureRateThreshold: 50
+          waitDurationInOpenState: 10000
+      instances:
+        customerService:
+          baseConfig: default
+        accountService:
+          baseConfig: default  
+        creditService:
+          baseConfig: default
+        transactionService:
+          baseConfig: default
+
+# Eureka Client Configuration - APUNTA AL HOST DESDE DOCKER
+eureka:
+  client:
+    service-url:
+      defaultZone: http://host.docker.internal:8761/eureka
+  instance:
+    prefer-ip-address: true
+
+# Actuator Endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    com.bank.gateway: DEBUG
