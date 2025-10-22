@@ -78,6 +78,13 @@ spring:
 
 # Eureka Client Configuration - APUNTA AL HOST DESDE DOCKER
 # Configuración de Eureka - AGREGAR ESTO
+
+info:
+  app:
+    name: ${spring.application.name}
+    version: 1.0
+    description: Api Gateway Service for Bank System at NTT DATA
+    
 eureka:
   client:
     register-with-eureka: true
