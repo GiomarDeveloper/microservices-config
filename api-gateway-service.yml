@@ -9,49 +9,49 @@ spring:
     gateway:
       # Configuración de rutas estáticas
       routes:
-        # Customer Service Route
+        # Customer Service Route - CORREGIDO
         - id: customer-service
           uri: lb://CUSTOMER-SERVICE
           predicates:
             - Path=/api/customers/**
           filters:
-            - RewritePath=/api/customers/(?<segment>.*), /$\{segment}
+            - RewritePath=/api/customers/?(?<segment>.*), /customers/$\{segment}
             - name: CircuitBreaker
               args:
                 name: customerService
                 fallbackUri: forward:/fallback/customer
 
-        # Account Service Route  
+        # Account Service Route - CORREGIDO
         - id: account-service
           uri: lb://ACCOUNT-SERVICE
           predicates:
             - Path=/api/accounts/**
           filters:
-            - RewritePath=/api/accounts/(?<segment>.*), /$\{segment}
+            - RewritePath=/api/accounts/?(?<segment>.*), /accounts/$\{segment}
             - name: CircuitBreaker
               args:
                 name: accountService
                 fallbackUri: forward:/fallback/account
 
-        # Credit Service Route
+        # Credit Service Route - CORREGIDO
         - id: credit-service
           uri: lb://CREDIT-SERVICE
           predicates:
             - Path=/api/credits/**
           filters:
-            - RewritePath=/api/credits/(?<segment>.*), /$\{segment}
+            - RewritePath=/api/credits/?(?<segment>.*), /credits/$\{segment}
             - name: CircuitBreaker
               args:
                 name: creditService
                 fallbackUri: forward:/fallback/credit
 
-        # Transaction Service Route
+        # Transaction Service Route - CORREGIDO
         - id: transaction-service
           uri: lb://TRANSACTION-SERVICE
           predicates:
             - Path=/api/transactions/**
           filters:
-            - RewritePath=/api/transactions/(?<segment>.*), /$\{segment}
+            - RewritePath=/api/transactions/?(?<segment>.*), /transactions/$\{segment}
             - name: CircuitBreaker
               args:
                 name: transactionService
