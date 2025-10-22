@@ -99,10 +99,15 @@ spring:
 # Eureka Client Configuration (desde Docker apuntando al host)
 eureka:
   client:
+    service-url:
+      defaultZone: http://host.docker.internal:8761/eureka
     register-with-eureka: true
     fetch-registry: true
+    registry-fetch-interval-seconds: 5
   instance:
     prefer-ip-address: false
+    lease-renewal-interval-in-seconds: 5
+    lease-expiration-duration-in-seconds: 10
     hostname: localhost
     instance-id: ${spring.application.name}:${server.port}
     non-secure-port: ${server.port}
