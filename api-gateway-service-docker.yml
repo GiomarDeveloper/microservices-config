@@ -77,12 +77,19 @@ spring:
           baseConfig: default
 
 # Eureka Client Configuration - APUNTA AL HOST DESDE DOCKER
+# Configuración de Eureka - AGREGAR ESTO
 eureka:
   client:
-    service-url:
-      defaultZone: http://host.docker.internal:8761/eureka
+    register-with-eureka: true
+    fetch-registry: true
   instance:
-    prefer-ip-address: true
+    prefer-ip-address: false
+    hostname: localhost
+    instance-id: ${spring.application.name}:${server.port}
+    non-secure-port: ${server.port}
+    home-page-url: http://localhost:${server.port}
+    health-check-url: http://localhost:${server.port}/actuator/health
+    status-page-url: http://localhost:${server.port}/actuator/info
 
 # Actuator Endpoints
 management:
