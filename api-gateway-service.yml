@@ -2,8 +2,12 @@ server:
   port: 8079
 
 spring:
+  application:
+    name: api-gateway-service
+    
   cloud:
     gateway:
+      # Configuración de rutas estáticas
       routes:
         # Customer Service Route
         - id: customer-service
@@ -53,10 +57,24 @@ spring:
                 name: transactionService
                 fallbackUri: forward:/fallback/transaction
 
+      # Discovery para rutas dinámicas
       discovery:
         locator:
           enabled: true
           lower-case-service-id: true
+          
+      # Configuración de HTTP Client
+      httpclient:
+        connect-timeout: 2000
+        response-timeout: 10s
+        pool:
+          max-connections: 1000
+          max-idle-time: 30000
+
+    # Configuración del Config Client
+    config:
+      uri: http://localhost:8888
+      fail-fast: false
 
   # Circuit Breaker Configuration
   resilience4j:
@@ -66,6 +84,8 @@ spring:
           slidingWindowSize: 10
           failureRateThreshold: 50
           waitDurationInOpenState: 10000
+          permittedNumberOfCallsInHalfOpenState: 3
+          automaticTransitionFromOpenToHalfOpenEnabled: true
       instances:
         customerService:
           baseConfig: default
@@ -81,15 +101,47 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+    register-with-eureka: true
+    fetch-registry: true
+    registry-fetch-interval-seconds: 5
   instance:
     prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+    lease-renewal-interval-in-seconds: 5
+    lease-expiration-duration-in-seconds: 10
 
 # Actuator Endpoints
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,gateway
+        include: health,info,gateway,metrics,env
+      base-path: /actuator
   endpoint:
     health:
       show-details: always
+      show-components: always
+    gateway:
+      enabled: true
+    info:
+      enabled: true
+  info:
+    env:
+      enabled: true
+    build:
+      enabled: true
+
+# Información de la aplicación
+info:
+  app:
+    name: ${spring.application.name}
+    description: API Gateway for Bank Microservices System
+    version: 1.0.0
+    environment: development
+
+# Logging
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty: DEBUG
+    com.bank.gateway: INFO
