@@ -35,5 +35,5 @@ management:
 info:
   app:
     name: ${spring.application.name}
-    version: ${project.version}
-    description: ${spring.application.description}
+    version: 1.0
+    description: Customer Service for Bank System at NTT DATA
