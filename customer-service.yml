@@ -37,3 +37,13 @@ info:
     name: ${spring.application.name}
     version: 1.0
     description: Customer Service for Bank System at NTT DATA
+    
+# Configuración de Eureka - AGREGAR ESTO
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: false
+    hostname: localhost
+    instance-id: ${spring.application.name}:${server.port}
