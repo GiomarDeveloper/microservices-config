@@ -11,7 +11,7 @@ spring:
       routes:
         # Customer Service Route
         - id: customer-service
-          uri: lb://CUSTOMER-SERVICE
+          uri: http://host.docker.internal:8081
           predicates:
             - Path=/api/customers/**
           filters:
@@ -23,7 +23,7 @@ spring:
 
         # Account Service Route
         - id: account-service
-          uri: lb://ACCOUNT-SERVICE
+          uri: http://host.docker.internal:8082
           predicates:
             - Path=/api/accounts/**
           filters:
@@ -35,7 +35,7 @@ spring:
 
         # Credit Service Route
         - id: credit-service
-          uri: lb://CREDIT-SERVICE
+          uri: http://host.docker.internal:8083
           predicates:
             - Path=/api/credits/**
           filters:
@@ -47,7 +47,7 @@ spring:
 
         # Transaction Service Route
         - id: transaction-service
-          uri: lb://TRANSACTION-SERVICE
+          uri: http://host.docker.internal:8084
           predicates:
             - Path=/api/transactions/**
           filters:
