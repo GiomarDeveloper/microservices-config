@@ -2,8 +2,12 @@ server:
   port: 8079
 
 spring:
+  application:
+    name: api-gateway-service
+
   cloud:
     gateway:
+      # Configuración de rutas estáticas (mismo formato que en local)
       routes:
         # Customer Service Route
         - id: customer-service
@@ -11,19 +15,19 @@ spring:
           predicates:
             - Path=/api/customers/**
           filters:
-            - RewritePath=/api/customers/(?<segment>.*), /$\{segment}
+            - RewritePath=/api/customers/?(?<segment>.*), /customers/${segment}
             - name: CircuitBreaker
               args:
                 name: customerService
                 fallbackUri: forward:/fallback/customer
 
-        # Account Service Route  
+        # Account Service Route
         - id: account-service
           uri: lb://ACCOUNT-SERVICE
           predicates:
             - Path=/api/accounts/**
           filters:
-            - RewritePath=/api/accounts/(?<segment>.*), /$\{segment}
+            - RewritePath=/api/accounts/?(?<segment>.*), /accounts/${segment}
             - name: CircuitBreaker
               args:
                 name: accountService
@@ -35,7 +39,7 @@ spring:
           predicates:
             - Path=/api/credits/**
           filters:
-            - RewritePath=/api/credits/(?<segment>.*), /$\{segment}
+            - RewritePath=/api/credits/?(?<segment>.*), /credits/${segment}
             - name: CircuitBreaker
               args:
                 name: creditService
@@ -47,16 +51,30 @@ spring:
           predicates:
             - Path=/api/transactions/**
           filters:
-            - RewritePath=/api/transactions/(?<segment>.*), /$\{segment}
+            - RewritePath=/api/transactions/?(?<segment>.*), /transactions/${segment}
             - name: CircuitBreaker
               args:
                 name: transactionService
                 fallbackUri: forward:/fallback/transaction
 
+      # Discovery dinámico
       discovery:
         locator:
           enabled: true
           lower-case-service-id: true
+
+      # Configuración de HTTP Client
+      httpclient:
+        connect-timeout: 2000
+        response-timeout: 10s
+        pool:
+          max-connections: 1000
+          max-idle-time: 30000
+
+    # Config Client (usa host.docker.internal dentro del contenedor)
+    config:
+      uri: http://host.docker.internal:8888
+      fail-fast: false
 
   # Circuit Breaker Configuration
   resilience4j:
@@ -66,49 +84,64 @@ spring:
           slidingWindowSize: 10
           failureRateThreshold: 50
           waitDurationInOpenState: 10000
+          permittedNumberOfCallsInHalfOpenState: 3
+          automaticTransitionFromOpenToHalfOpenEnabled: true
       instances:
         customerService:
           baseConfig: default
         accountService:
-          baseConfig: default  
+          baseConfig: default
         creditService:
           baseConfig: default
         transactionService:
           baseConfig: default
 
-# Eureka Client Configuration - APUNTA AL HOST DESDE DOCKER
-# Configuración de Eureka - AGREGAR ESTO
-
-info:
-  app:
-    name: ${spring.application.name}
-    version: 1.0
-    description: Api Gateway Service for Bank System at NTT DATA
-    
+# Eureka Client Configuration (desde Docker apuntando al host)
 eureka:
   client:
+    service-url:
+      defaultZone: http://host.docker.internal:8761/eureka
     register-with-eureka: true
     fetch-registry: true
+    registry-fetch-interval-seconds: 5
   instance:
-    prefer-ip-address: false
-    hostname: localhost
+    prefer-ip-address: true
     instance-id: ${spring.application.name}:${server.port}
-    non-secure-port: ${server.port}
-    home-page-url: http://localhost:${server.port}
-    health-check-url: http://localhost:${server.port}/actuator/health
-    status-page-url: http://localhost:${server.port}/actuator/info
+    lease-renewal-interval-in-seconds: 5
+    lease-expiration-duration-in-seconds: 10
 
 # Actuator Endpoints
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,gateway
+        include: health,info,gateway,metrics,env
+      base-path: /actuator
   endpoint:
     health:
       show-details: always
+      show-components: always
+    gateway:
+      enabled: true
+    info:
+      enabled: true
+  info:
+    env:
+      enabled: true
+    build:
+      enabled: true
 
+# Información de la aplicación
+info:
+  app:
+    name: ${spring.application.name}
+    description: API Gateway for Bank Microservices System (Docker)
+    version: 1.0.0
+    environment: docker
+
+# Logging
 logging:
   level:
     org.springframework.cloud.gateway: DEBUG
-    com.bank.gateway: DEBUG
+    reactor.netty: DEBUG
+    com.bank.gateway: INFO
