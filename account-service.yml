@@ -13,6 +13,8 @@ external:
   services:
     customer:
       url: http://localhost:8081
+    credit:
+      url: http://localhost:8083
 
 logging:
   level:
