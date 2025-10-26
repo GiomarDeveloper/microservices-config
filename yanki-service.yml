@@ -17,6 +17,10 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     properties:
       security.protocol: PLAINTEXT
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/yanki
+      auto-index-creation: true
   
   redis:
     host: localhost
