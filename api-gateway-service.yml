@@ -9,7 +9,7 @@ spring:
       secret-key: "BankApp2025!SuperSecureJWTKey@256BitsForMicroservicesGateway#SpringBoot3"
       expiration-time: 86400000 # 24 horas en milisegundos
 
-  # MOVER app AQUÍ DENTRO DE spring:
+  # MOVER app DENTRO de spring:
   app:
     users:
       - username: "admin"
@@ -28,6 +28,7 @@ spring:
 
   cloud:
     gateway:
+      # Configuración de rutas estáticas
       routes:
         # Customer Service Route
         - id: customer-service
@@ -77,39 +78,46 @@ spring:
                 name: transactionService
                 fallbackUri: forward:/fallback/transaction
 
+      # Discovery para rutas dinámicas
       discovery:
         locator:
           enabled: true
           lower-case-service-id: true
           
+      # Configuración de HTTP Client
       httpclient:
         connect-timeout: 2000
         response-timeout: 10s
+        pool:
+          max-connections: 1000
+          max-idle-time: 30000
 
+    # Configuración del Config Client
     config:
       uri: http://localhost:8888
       fail-fast: false
 
-# El resto de la configuración permanece igual...
-resilience4j:
-  circuitbreaker:
-    configs:
-      default:
-        slidingWindowSize: 10
-        failureRateThreshold: 50
-        waitDurationInOpenState: 10000
-        permittedNumberOfCallsInHalfOpenState: 3
-        automaticTransitionFromOpenToHalfOpenEnabled: true
-    instances:
-      customerService:
-        baseConfig: default
-      accountService:
-        baseConfig: default  
-      creditService:
-        baseConfig: default
-      transactionService:
-        baseConfig: default
+  # Circuit Breaker Configuration
+  resilience4j:
+    circuitbreaker:
+      configs:
+        default:
+          slidingWindowSize: 10
+          failureRateThreshold: 50
+          waitDurationInOpenState: 10000
+          permittedNumberOfCallsInHalfOpenState: 3
+          automaticTransitionFromOpenToHalfOpenEnabled: true
+      instances:
+        customerService:
+          baseConfig: default
+        accountService:
+          baseConfig: default  
+        creditService:
+          baseConfig: default
+        transactionService:
+          baseConfig: default
 
+# Eureka Client Configuration
 eureka:
   client:
     service-url:
@@ -123,6 +131,7 @@ eureka:
     lease-renewal-interval-in-seconds: 5
     lease-expiration-duration-in-seconds: 10
 
+# Actuator Endpoints
 management:
   endpoints:
     web:
@@ -135,7 +144,15 @@ management:
       show-components: always
     gateway:
       enabled: true
+    info:
+      enabled: true
+  info:
+    env:
+      enabled: true
+    build:
+      enabled: true
 
+# Información de la aplicación
 info:
   app:
     name: ${spring.application.name}
@@ -143,6 +160,7 @@ info:
     version: 1.0.0
     environment: development
 
+# Logging
 logging:
   level:
     org.springframework.cloud.gateway: DEBUG
