@@ -7,8 +7,8 @@ spring:
   security:
     jwt:
       secret-key: "BankApp2025!SuperSecureJWTKey@256BitsForMicroservicesGateway#SpringBoot3"
-      expiration-time: 86400000 # 24 horas en milisegundos
- 
+      expiration-time: 86400000
+
 app:
   users:
     - username: "admin"
@@ -25,7 +25,7 @@ app:
       roles:
         - "ROLE_OPERATOR"
 
-cloud:
+  cloud:
     gateway:
       routes:
         # Customer Service Route
