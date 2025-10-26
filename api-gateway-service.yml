@@ -9,7 +9,6 @@ spring:
       secret-key: "BankApp2025!SuperSecureJWTKey@256BitsForMicroservicesGateway#SpringBoot3"
       expiration-time: 86400000 # 24 horas en milisegundos
 
-  # MOVER app DENTRO de spring:
   app:
     users:
       - username: "admin"
@@ -28,11 +27,11 @@ spring:
 
   cloud:
     gateway:
-      # Configuración de rutas estáticas
+      # Configuración de rutas estáticas con URLs DIRECTAS
       routes:
-        # Customer Service Route
+        # Customer Service Route - URL DIRECTA
         - id: customer-service
-          uri: lb://CUSTOMER-SERVICE
+          uri: http://localhost:8081  # Puerto de tu customer service
           predicates:
             - Path=/api/customers/**
           filters:
@@ -42,9 +41,9 @@ spring:
                 name: customerService
                 fallbackUri: forward:/fallback/customer
 
-        # Account Service Route
+        # Account Service Route - URL DIRECTA
         - id: account-service
-          uri: lb://ACCOUNT-SERVICE
+          uri: http://localhost:8082  # Puerto de tu account service
           predicates:
             - Path=/api/accounts/**
           filters:
@@ -54,9 +53,9 @@ spring:
                 name: accountService
                 fallbackUri: forward:/fallback/account
 
-        # Credit Service Route
+        # Credit Service Route - URL DIRECTA
         - id: credit-service
-          uri: lb://CREDIT-SERVICE
+          uri: http://localhost:8083  # Puerto de tu credit service
           predicates:
             - Path=/api/credits/**
           filters:
@@ -66,9 +65,9 @@ spring:
                 name: creditService
                 fallbackUri: forward:/fallback/credit
 
-        # Transaction Service Route
+        # Transaction Service Route - URL DIRECTA
         - id: transaction-service
-          uri: lb://TRANSACTION-SERVICE
+          uri: http://localhost:8084  # Puerto de tu transaction service
           predicates:
             - Path=/api/transactions/**
           filters:
@@ -78,11 +77,10 @@ spring:
                 name: transactionService
                 fallbackUri: forward:/fallback/transaction
 
-      # Discovery para rutas dinámicas
+      # Deshabilitar discovery locator ya que usamos URLs directas
       discovery:
         locator:
-          enabled: true
-          lower-case-service-id: true
+          enabled: false
           
       # Configuración de HTTP Client
       httpclient:
@@ -117,19 +115,14 @@ spring:
         transactionService:
           baseConfig: default
 
-# Eureka Client Configuration
+# Eureka Client Configuration (OPCIONAL - puedes comentarlo si no usas Eureka)
 eureka:
   client:
+    enabled: false  # Deshabilitar Eureka si solo usas URLs directas
     service-url:
       defaultZone: http://localhost:8761/eureka
-    register-with-eureka: true
-    fetch-registry: true
-    registry-fetch-interval-seconds: 5
-  instance:
-    prefer-ip-address: true
-    instance-id: ${spring.application.name}:${server.port}
-    lease-renewal-interval-in-seconds: 5
-    lease-expiration-duration-in-seconds: 10
+    register-with-eureka: false
+    fetch-registry: false
 
 # Actuator Endpoints
 management:
@@ -166,5 +159,3 @@ logging:
     org.springframework.cloud.gateway: DEBUG
     reactor.netty: DEBUG
     com.bank.gateway: INFO
-    com.netflix.eureka: DEBUG
-    com.netflix.discovery: DEBUG
