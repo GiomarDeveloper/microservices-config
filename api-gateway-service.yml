@@ -4,6 +4,9 @@ server:
 spring:
   application:
     name: api-gateway-service
+  security:
+    jwt:
+      secret-key: "BankApp2025!SuperSecureJWTKey@256BitsForMicroservicesGateway#SpringBoot3"
     
   cloud:
     gateway:
