@@ -9,68 +9,82 @@ spring:
       secret-key: "BankApp2025!SuperSecureJWTKey@256BitsForMicroservicesGateway#SpringBoot3"
       expiration-time: 86400000
 
-app:
-  users:
-    - username: "admin"
-      password: "admin123"
-      roles:
-        - "ROLE_ADMIN"
-        - "ROLE_USER"
-    - username: "user"
-      password: "user123"
-      roles:
-        - "ROLE_USER"
-    - username: "operator"
-      password: "operator123"
-      roles:
-        - "ROLE_OPERATOR"
+  app:
+    users:
+      - username: "admin"
+        password: "admin123"
+        roles:
+          - "ROLE_ADMIN"
+          - "ROLE_USER"
+      - username: "user"
+        password: "user123"
+        roles:
+          - "ROLE_USER"
+      - username: "operator"
+        password: "operator123"
+        roles:
+          - "ROLE_OPERATOR"
 
   cloud:
     gateway:
       routes:
-        # Customer Service Route
+        # Auth Service Route - SIN JWT (público)
+        - id: auth-service
+          uri: http://localhost:8079  # Apunta al mismo gateway para el auth
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - name: JwtAuthenticationFilter
+              args:
+                skip: true  # Saltar JWT para endpoints de auth
+
+        # Customer Service Route - CON JWT
         - id: customer-service
           uri: http://localhost:8081
           predicates:
             - Path=/api/customers/**
           filters:
             - RewritePath=/api/customers/?(?<segment>.*), /customers/$\{segment}
+            - name: JwtAuthenticationFilter  # AGREGAR ESTE FILTRO
             - name: CircuitBreaker
               args:
                 name: customerService
                 fallbackUri: forward:/fallback/customer
 
-        # Account Service Route
+        # Account Service Route - CON JWT
         - id: account-service
           uri: http://localhost:8082
           predicates:
             - Path=/api/accounts/**
           filters:
             - RewritePath=/api/accounts/?(?<segment>.*), /accounts/$\{segment}
+            - name: JwtAuthenticationFilter  # AGREGAR ESTE FILTRO
             - name: CircuitBreaker
               args:
                 name: accountService
                 fallbackUri: forward:/fallback/account
 
-        # Credit Service Route
+        # Credit Service Route - CON JWT
         - id: credit-service
           uri: http://localhost:8083
           predicates:
             - Path=/api/credits/**
           filters:
             - RewritePath=/api/credits/?(?<segment>.*), /credits/$\{segment}
+            - name: JwtAuthenticationFilter  # AGREGAR ESTE FILTRO
             - name: CircuitBreaker
               args:
                 name: creditService
                 fallbackUri: forward:/fallback/credit
 
-        # Transaction Service Route
+        # Transaction Service Route - CON JWT
         - id: transaction-service
           uri: http://localhost:8084
           predicates:
             - Path=/api/transactions/**
           filters:
             - RewritePath=/api/transactions/?(?<segment>.*), /transactions/$\{segment}
+            - name: JwtAuthenticationFilter  # AGREGAR ESTE FILTRO
             - name: CircuitBreaker
               args:
                 name: transactionService
@@ -88,7 +102,7 @@ app:
       uri: http://localhost:8888
       fail-fast: false
 
-# El resto de la configuración...
+# El resto de la configuración permanece igual...
 resilience4j:
   circuitbreaker:
     configs:
