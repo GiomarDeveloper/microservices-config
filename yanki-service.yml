@@ -11,10 +11,10 @@ spring:
       group-id: yanki-service
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       properties:
-        spring.json.trusted.packages: "com.bank.yanki.domain.model,com.bank.yanki.application.dto,com.bank.yanki.infrastructure.dto"
-        #spring.json.type.mapping: "transaction:com.bank.yanki.domain.model.YankiWallet$Transaction, wallet:com.bank.yanki.domain.model.YankiWallet"
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+        spring.json.trusted.packages: "com.bank.yanki.application.event,com.bank.yanki.domain.model"
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer

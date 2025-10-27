@@ -16,13 +16,13 @@ spring:
   kafka:
     bootstrap-servers: localhost:29093
     consumer:
-      group-id: transaction-service
+      group-id: yanki-service
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       properties:
-        spring.json.trusted.packages: "com.bank.transaction.application.event,com.bank.yanki.application.event"
-        # spring.json.type.mapping: "transactionPaymentRequestEvent:com.bank.transaction.application.event.TransactionPaymentRequestEvent,transactionConsumptionRequestEvent:com.bank.transaction.application.event.TransactionConsumptionRequestEvent"
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+        spring.json.trusted.packages: "com.bank.yanki.application.event,com.bank.yanki.domain.model"
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
