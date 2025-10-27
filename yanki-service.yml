@@ -2,6 +2,9 @@ server:
   port: 8085
 
 spring:
+  application:
+    name: yanki-service
+  
   kafka:
     bootstrap-servers: localhost:29093
     consumer:
@@ -10,13 +13,14 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.trusted.packages: "com.bank.yanki.model.*"
-        spring.json.type.mapping: "transaction:com.bank.yanki.model.Transaction, wallet:com.bank.yanki.model.Wallet"
+        spring.json.trusted.packages: "com.bank.yanki.domain.model.*"  # ← CORREGIR PAQUETE
+        spring.json.type.mapping: "transaction:com.bank.yanki.domain.model.YankiWallet.Transaction, wallet:com.bank.yanki.domain.model.YankiWallet"
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     properties:
       security.protocol: PLAINTEXT
+  
   data:
     mongodb:
       uri: mongodb://localhost:27017/yanki
@@ -32,11 +36,6 @@ spring:
         max-wait: -1ms
         max-idle: 8
         min-idle: 0
-  
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/yanki
-      auto-index-creation: true
 
 # Eureka Discovery
 eureka:
@@ -46,6 +45,8 @@ eureka:
   client:
     register-with-eureka: true
     fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka  # ← AGREGAR ESTO
 
 # Management Endpoints
 management:
