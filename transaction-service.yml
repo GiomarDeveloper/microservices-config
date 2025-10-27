@@ -21,7 +21,7 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.trusted.packages: "com.bank.transaction.application.event"
+        spring.json.trusted.packages: "com.bank.transaction.application.event,com.bank.yanki.application.event"
         # spring.json.type.mapping: "transactionPaymentRequestEvent:com.bank.transaction.application.event.TransactionPaymentRequestEvent,transactionConsumptionRequestEvent:com.bank.transaction.application.event.TransactionConsumptionRequestEvent"
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
