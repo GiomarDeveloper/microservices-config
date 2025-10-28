@@ -2,22 +2,50 @@ server:
   port: 8083
 
 spring:
+  application:
+    name: credit-service  # ← AGREGAR ESTO
+  
   data:
     mongodb:
-      # Para docker:
-      # uri: mongodb://host.docker.internal:27017/db_credit
-      # Local
       uri: mongodb://localhost:27017/db_credit
       
+  # CONFIGURACIÓN KAFKA - AGREGAR ESTO
+  kafka:
+    bootstrap-servers: localhost:29093
+    consumer:
+      group-id: credit-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer  # ← DESERIALIZAR COMO STRING
+      properties:
+        spring.json.use.type.headers: false
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false  # ← NO ENVIAR TYPE HEADERS
+    properties:
+      security.protocol: PLAINTEXT
+
 external:
   services:
     customer:
       url: http://localhost:8081
+    account:  # ← AGREGAR ESTO PARA CONSULTAR CUENTAS
+      url: http://localhost:8082
+
+# CONFIGURACIÓN KAFKA TOPICS - AGREGAR ESTO
+app:
+  kafka:
+    topics:
+      credit-balance-inquiry: yanki.credit.balance.inquiry
+      credit-balance-response: yanki.credit.balance.response
 
 logging:
   level:
     root: INFO
     com.bank.credit: DEBUG
+    org.springframework.kafka: INFO  # ← AGREGAR PARA DEBUG KAFKA
     
 management:
   endpoints:
@@ -43,11 +71,13 @@ info:
     version: 1.0
     description: Microservice for bank credit management
     
-# Configuración de Eureka - AGREGAR ESTO
+# Configuración de Eureka
 eureka:
   client:
     register-with-eureka: true
     fetch-registry: true
+    service-url:  # ← AGREGAR ESTO
+      defaultZone: http://localhost:8761/eureka
   instance:
     prefer-ip-address: false
     hostname: localhost
