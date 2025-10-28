@@ -2,17 +2,58 @@ server:
   port: 8086
 
 spring:
+  application:
+    name: bootcoin-service  # ← AGREGAR ESTO
+  
   data:
     mongodb:
       # Para docker:
       # uri: mongodb://host.docker.internal:27017/bootcoin
       # Local
       uri: mongodb://localhost:27017/bootcoin
+      
+  # CONFIGURACIÓN KAFKA - AGREGAR ESTO
+  kafka:
+    bootstrap-servers: localhost:9092  # ← Cambiar a puerto estándar
+    consumer:
+      group-id: bootcoin-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.bank.bootcoin.application.event"
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+    properties:
+      security.protocol: PLAINTEXT
+
+# CONFIGURACIÓN KAFKA TOPICS - AGREGAR ESTO
+app:
+  kafka:
+    topics:
+      bootcoin-transactions: bootcoin-transactions
+      yanki-payments: yanki-payments
+      account-transactions: account-transactions
+      wallet-updates: wallet-updates
+
+# SERVICIOS EXTERNOS - AGREGAR ESTO
+external:
+  services:
+    yanki:
+      url: http://localhost:8085
+    account:
+      url: http://localhost:8082
+    credit:
+      url: http://localhost:8083
 
 logging:
   level:
     root: INFO
     com.bank.bootcoin: DEBUG
+    org.springframework.kafka: INFO  # ← AGREGAR PARA DEBUG KAFKA
     
 management:
   endpoints:
@@ -38,11 +79,13 @@ info:
     version: 1.0
     description: Bootcoin Service for Bank System at NTT DATA
     
-# Configuración de Eureka - AGREGAR ESTO
+# Configuración de Eureka - ACTUALIZAR ESTO
 eureka:
   client:
     register-with-eureka: true
     fetch-registry: true
+    service-url:  # ← AGREGAR ESTO
+      defaultZone: http://localhost:8761/eureka
   instance:
     prefer-ip-address: false
     hostname: localhost
