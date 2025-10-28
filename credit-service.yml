@@ -16,8 +16,9 @@ spring:
       group-id: credit-service
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer  # ← DESERIALIZAR COMO STRING
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer  # ← DESERIALIZAR COMO STRING
       properties:
+        spring.json.trusted.packages: "com.bank.credit.infrastructure.event"
         spring.json.use.type.headers: false
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
