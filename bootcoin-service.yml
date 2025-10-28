@@ -14,7 +14,7 @@ spring:
       
   # CONFIGURACIÓN KAFKA - AGREGAR ESTO
   kafka:
-    bootstrap-servers: localhost:9092  # ← Cambiar a puerto estándar
+    bootstrap-servers: localhost:29093  # ← Cambiar a puerto estándar
     consumer:
       group-id: bootcoin-service
       auto-offset-reset: earliest
