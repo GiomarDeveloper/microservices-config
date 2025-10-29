@@ -46,6 +46,8 @@ app:
     topics:
       transaction-payment-request: transaction.payment.request
       transaction-consumption-request: transaction.consumption.request
+      bank-withdrawal-request: bank-withdrawal-request
+      bank-withdrawal-response: bank-withdrawal-response
 
 logging:
   level:
