@@ -21,7 +21,7 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       properties:
-        spring.json.trusted.packages: "com.bank.bootcoin.application.event"
+        spring.json.trusted.packages: "com.bank.bootcoin.application.event,com.bank.yanki.application.event"
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -40,6 +40,8 @@ app:
       wallet-updates: wallet-updates
       balance-validation-request: balance-validation-request
       balance-validation-response: balance-validation-response
+      yanki-balance-validation-request: yanki-balance-validation-request
+      yanki-balance-validation-response: yanki-balance-validation-response
 
 # SERVICIOS EXTERNOS - AGREGAR ESTO
 external:

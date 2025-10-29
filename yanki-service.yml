@@ -75,3 +75,7 @@ app:
       wallet-updated: yanki.wallet.updated
       card-associated: yanki.card.associated
       notification: yanki.notifications
+      yanki-balance-validation-request: yanki-balance-validation-request
+      yanki-balance-validation-response: yanki-balance-validation-response
+      balance-validation-request: balance-validation-request
+      balance-validation-response: balance-validation-response
