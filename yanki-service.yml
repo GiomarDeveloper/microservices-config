@@ -79,3 +79,5 @@ app:
       yanki-balance-validation-response: yanki-balance-validation-response
       balance-validation-request: balance-validation-request
       balance-validation-response: balance-validation-response
+      yanki-payment-request: yanki-payment-request
+      yanki-payment-completed: yanki-payment-completed

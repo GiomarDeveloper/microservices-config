@@ -44,6 +44,8 @@ app:
       yanki-balance-validation-response: yanki-balance-validation-response
       bank-withdrawal-request: bank-withdrawal-request
       bank-withdrawal-response: bank-withdrawal-response
+      yanki-payment-request: yanki-payment-request
+      yanki-payment-completed: yanki-payment-completed
 
 # SERVICIOS EXTERNOS - AGREGAR ESTO
 external:
