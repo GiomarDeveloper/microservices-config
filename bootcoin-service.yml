@@ -38,6 +38,8 @@ app:
       yanki-payments: yanki-payments
       account-transactions: account-transactions
       wallet-updates: wallet-updates
+      balance-validation-request: balance-validation-request
+      balance-validation-response: balance-validation-response
 
 # SERVICIOS EXTERNOS - AGREGAR ESTO
 external:
