@@ -24,7 +24,7 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb://mongodb:27017/yanki
+      uri: mongodb://host.docker.internal:27017/yanki
       auto-index-creation: true
 
   redis:
