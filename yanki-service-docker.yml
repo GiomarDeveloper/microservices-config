@@ -30,7 +30,7 @@ spring:
   redis:
     # ⚠️ Redis está en tu PC (no en Docker)
     # Usamos host.docker.internal para que el contenedor acceda al Redis del host
-    host: host.docker.internal
+    host: redis-local
     port: 6379
     timeout: 2000ms
     lettuce:
