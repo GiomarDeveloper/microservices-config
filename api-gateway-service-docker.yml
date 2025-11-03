@@ -5,63 +5,86 @@ spring:
   application:
     name: api-gateway-service
 
+  security:
+    jwt:
+      secret-key: "BankApp2025!SuperSecureJWTKey@256BitsForMicroservicesGateway#SpringBoot3"
+      expiration-time: 86400000
+
+  app:
+    users:
+      - username: "admin"
+        password: "admin123"
+        roles:
+          - "ROLE_ADMIN"
+          - "ROLE_USER"
+      - username: "user"
+        password: "user123"
+        roles:
+          - "ROLE_USER"
+      - username: "operator"
+        password: "operator123"
+        roles:
+          - "ROLE_OPERATOR"
+
   cloud:
     gateway:
-      # Configuración de rutas estáticas (mismo formato que en local)
       routes:
-        # Customer Service Route
+        # Customer Service Route - CON JWT
         - id: customer-service
           uri: http://host.docker.internal:8081
           predicates:
             - Path=/api/customers/**
           filters:
             - RewritePath=/api/customers/?(?<segment>.*), /customers/${segment}
+            - name: JwtAuthenticationFilter
             - name: CircuitBreaker
               args:
                 name: customerService
                 fallbackUri: forward:/fallback/customer
 
-        # Account Service Route
+        # Account Service Route - CON JWT
         - id: account-service
           uri: http://host.docker.internal:8082
           predicates:
             - Path=/api/accounts/**
           filters:
             - RewritePath=/api/accounts/?(?<segment>.*), /accounts/${segment}
+            - name: JwtAuthenticationFilter
             - name: CircuitBreaker
               args:
                 name: accountService
                 fallbackUri: forward:/fallback/account
 
-        # Credit Service Route
+        # Credit Service Route - CON JWT
         - id: credit-service
           uri: http://host.docker.internal:8083
           predicates:
             - Path=/api/credits/**
           filters:
             - RewritePath=/api/credits/?(?<segment>.*), /credits/${segment}
+            - name: JwtAuthenticationFilter
             - name: CircuitBreaker
               args:
                 name: creditService
                 fallbackUri: forward:/fallback/credit
 
-        # Transaction Service Route
+        # Transaction Service Route - CON JWT
         - id: transaction-service
           uri: http://host.docker.internal:8084
           predicates:
             - Path=/api/transactions/**
           filters:
             - RewritePath=/api/transactions/?(?<segment>.*), /transactions/${segment}
+            - name: JwtAuthenticationFilter
             - name: CircuitBreaker
               args:
                 name: transactionService
                 fallbackUri: forward:/fallback/transaction
 
-      # Discovery dinámico
+      # Discovery dinámico DESHABILITADO (usando rutas estáticas con JWT)
       discovery:
         locator:
-          enabled: true
-          lower-case-service-id: true
+          enabled: false
 
       # Configuración de HTTP Client
       httpclient:
@@ -96,24 +119,10 @@ spring:
         transactionService:
           baseConfig: default
 
-# Eureka Client Configuration (desde Docker apuntando al host)
+# Eureka Client Configuration DESHABILITADO
 eureka:
   client:
-    service-url:
-      defaultZone: http://host.docker.internal:8761/eureka
-    register-with-eureka: true
-    fetch-registry: true
-    registry-fetch-interval-seconds: 5
-  instance:
-    prefer-ip-address: false
-    lease-renewal-interval-in-seconds: 5
-    lease-expiration-duration-in-seconds: 10
-    hostname: localhost
-    instance-id: ${spring.application.name}:${server.port}
-    non-secure-port: ${server.port}
-    home-page-url: http://localhost:${server.port}
-    health-check-url: http://localhost:${server.port}/actuator/health
-    status-page-url: http://localhost:${server.port}/actuator/info
+    enabled: false
 
 # Actuator Endpoints
 management:
@@ -140,7 +149,7 @@ management:
 info:
   app:
     name: ${spring.application.name}
-    description: API Gateway for Bank Microservices System (Docker)
+    description: API Gateway for Bank Microservices System (Docker with JWT)
     version: 1.0.0
     environment: docker
 
