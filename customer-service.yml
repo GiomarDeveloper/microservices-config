@@ -8,6 +8,15 @@ spring:
       # uri: mongodb://host.docker.internal:27017/db_customer
       # Local
       uri: mongodb://localhost:27017/db_customer
+      
+external:
+  services:
+    account:
+      url: ${EXTERNAL_SERVICES_ACCOUNT_URL:http://localhost:8082}
+    credit:
+      url: ${EXTERNAL_SERVICES_CREDIT_URL:http://localhost:8083}
+    transaction:
+      url: ${EXTERNAL_SERVICES_TRANSACTION_URL:http://localhost:8084}
 
 logging:
   level:
