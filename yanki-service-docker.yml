@@ -1,0 +1,88 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: yanki-service
+
+  kafka:
+    bootstrap-servers: yanki-service-kafka-1:9092
+    consumer:
+      group-id: yanki-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      properties:
+        security.protocol: PLAINTEXT
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+    properties:
+      security.protocol: PLAINTEXT
+
+  data:
+    mongodb:
+      uri: mongodb://mongodb:27017/yanki
+      auto-index-creation: true
+
+  redis:
+    # ⚠️ Redis está en tu PC (no en Docker)
+    # Usamos host.docker.internal para que el contenedor acceda al Redis del host
+    host: host.docker.internal
+    port: 6379
+    timeout: 2000ms
+    lettuce:
+      pool:
+        max-active: 8
+        max-wait: -1ms
+        max-idle: 8
+        min-idle: 0
+
+# Eureka Discovery
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    prefer-ip-address: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      # Eureka está corriendo en Docker dentro de la red
+      defaultZone: http://discovery-service-container:8761/eureka
+
+# Management Endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+    metrics:
+      enabled: true
+
+# Logging
+logging:
+  level:
+    com.bank.yanki: DEBUG
+    org.springframework.kafka: INFO
+    org.springframework.data.redis: INFO
+    org.apache.kafka: WARN
+
+# Kafka Topics
+app:
+  kafka:
+    topics:
+      transaction-created: yanki.transactions.created
+      wallet-updated: yanki.wallet.updated
+      card-associated: yanki.card.associated
+      notification: yanki.notifications
+      yanki-balance-validation-request: yanki-balance-validation-request
+      yanki-balance-validation-response: yanki-balance-validation-response
+      balance-validation-request: balance-validation-request
+      balance-validation-response: balance-validation-response
+      yanki-payment-request: yanki-payment-request
+      yanki-payment-completed: yanki-payment-completed

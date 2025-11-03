@@ -1,0 +1,102 @@
+server:
+  port: 8086
+
+spring:
+  application:
+    name: bootcoin-service
+  
+  data:
+    mongodb:
+      # Usa este si ejecutas Bootcoin dentro de Docker:
+      uri: mongodb://mongodb:27017/bootcoin
+      # Usa este si ejecutas Bootcoin localmente:
+      # uri: mongodb://localhost:27017/bootcoin
+
+  kafka:
+    # Kafka corre dentro de Docker
+    bootstrap-servers: yanki-service-kafka-1:9092
+    consumer:
+      group-id: bootcoin-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      properties:
+        spring.json.trusted.packages: >
+          com.bank.yanki.application.event,
+          com.bank.yanki.domain.model,
+          com.bank.bootcoin.application.event,
+          com.bank.transaction.application.event
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      properties:
+        spring.json.add.type.headers: false
+    properties:
+      security.protocol: PLAINTEXT
+
+app:
+  kafka:
+    topics:
+      bootcoin-transactions: bootcoin-transactions
+      yanki-payments: yanki-payments
+      account-transactions: account-transactions
+      wallet-updates: wallet-updates
+      balance-validation-request: balance-validation-request
+      balance-validation-response: balance-validation-response
+      yanki-balance-validation-request: yanki-balance-validation-request
+      yanki-balance-validation-response: yanki-balance-validation-response
+      bank-withdrawal-request: bank-withdrawal-request
+      bank-withdrawal-response: bank-withdrawal-response
+      yanki-payment-request: yanki-payment-request
+      yanki-payment-completed: yanki-payment-completed
+
+external:
+  services:
+    # Estos nombres deben coincidir con los container_name de cada microservicio
+    yanki:
+      url: http://yanki-service-container:8085
+    account:
+      url: http://account-service-container:8082
+    credit:
+      url: http://credit-service-container:8083
+
+logging:
+  level:
+    root: INFO
+    com.bank.bootcoin: DEBUG
+    org.springframework.kafka: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,env,beans
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+    info:
+      enabled: true
+  info:
+    env:
+      enabled: true
+    build:
+      enabled: true
+
+info:
+  app:
+    name: ${spring.application.name}
+    version: 1.0
+    description: Bootcoin Service for Bank System at NTT DATA
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://discovery-service-container:8761/eureka
+  instance:
+    prefer-ip-address: false
+    hostname: bootcoin-service-container
+    instance-id: ${spring.application.name}:${server.port}
