@@ -12,6 +12,11 @@ spring:
       # Usa este si ejecutas Bootcoin localmente:
       # uri: mongodb://localhost:27017/bootcoin
 
+  redis:
+    host: redis-local
+    port: 6379
+    timeout: 5000ms
+
   kafka:
     # Kafka corre dentro de Docker
     bootstrap-servers: yanki-service-kafka-1:9092
