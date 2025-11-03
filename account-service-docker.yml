@@ -1,19 +1,50 @@
+server:
+  port: 8082
+
 spring:
+  application:
+    name: account-service
   data:
     mongodb:
       uri: mongodb://mongodb:27017/db_account
+  kafka:
+    bootstrap-servers: kafka:29092
+    consumer:
+      group-id: account-service
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      properties:
+        security.protocol: PLAINTEXT
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      properties:
+        spring.json.add.type.headers: false
+
+app:
+  kafka:
+    topics:
+      balance-validation-request: balance-validation-request
+      balance-validation-response: balance-validation-response
+      account-inquiry-request: account-inquiry-request
+      account-inquiry-response: account-inquiry-response
 
 external:
   services:
     customer:
-      url: http://host.docker.internal:8081
+      url: ${EXTERNAL_SERVICES_CUSTOMER_URL:http://customer-service:8081}
     credit:
-      url: http://host.docker.internal:8083
+      url: ${EXTERNAL_SERVICES_CREDIT_URL:http://credit-service:8083}
+    transaction:
+      url: ${EXTERNAL_SERVICES_TRANSACTION_URL:http://transaction-service:8084}
 
 logging:
   level:
+    root: INFO
     com.bank.account: DEBUG
-    
+    org.springframework.kafka: DEBUG
+
 management:
   endpoints:
     web:
@@ -38,11 +69,13 @@ info:
     version: 1.0
     description: Microservice for bank account management
 
-# Configuración de Eureka - AGREGAR ESTO
+# Configuración de Eureka
 eureka:
   client:
     register-with-eureka: true
     fetch-registry: true
+    service-url:
+      defaultZone: ${EUREKA_SERVER_URI:http://eureka-server:8761/eureka}
   instance:
     prefer-ip-address: false
     hostname: localhost
