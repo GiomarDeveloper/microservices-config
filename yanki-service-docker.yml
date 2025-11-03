@@ -6,7 +6,7 @@ spring:
     name: yanki-service
 
   kafka:
-    bootstrap-servers: kafka-1:9092
+    bootstrap-servers: yanki-service-kafka-1:9092
     consumer:
       group-id: yanki-service
       auto-offset-reset: earliest
